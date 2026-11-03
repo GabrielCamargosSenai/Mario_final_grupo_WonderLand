@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const startForm = document.getElementById('start-form');
     const playerInput = document.getElementById('player-input');
     const characterSelect = document.getElementById('character-select');
+    const themeSelect = document.getElementById('theme-select');
     const btnViewRanking = document.getElementById('btn-view-ranking');
 
     const gameoverModal = document.getElementById('gameover-modal');
@@ -35,7 +36,12 @@ document.addEventListener('DOMContentLoaded', () => {
     let isPaused = false;
     let vidas = 3;
     let collisionCooldown = false;
-    let personagemAtual = 'assets/cavaleiro.gif';
+    let isJumping = false;
+    let personagemAtual = '';
+    let obstaculoAtual = '';
+    let itemAtual = '';
+    let fundoAtual = '';
+    let temaAtual = '';
 
     const livesDisplay = document.getElementById('lives-display');
 
@@ -49,6 +55,120 @@ document.addEventListener('DOMContentLoaded', () => {
     const velocidadeMinima = 1;
 
 let nivelAtual = 0;
+   // Configurações dos temas, personagens e obstáculos
+const configuracaoTemas = {
+
+    // TEMA 1: ALICE NO PAÍS DAS MARAVILHAS
+    alice: {
+        fundo: 'paisMaravilhasImg/maravilhasFundo.jpg',
+
+        personagens: [
+            {
+                id: 'rainha',
+                nome: 'Rainha de Copas',
+                imagem: 'paisMaravilhasImg/RainhaCopas.gif',
+                obstaculo: 'paisMaravilhasImg/Cogumelo.png',
+                item: 'paisMaravilhasImg/Cartas.png'
+            },
+
+            {
+                id: 'chapeleiro',
+                nome: 'Chapeleiro Maluco',
+                imagem: 'paisMaravilhasImg/ChapeleiroMaluco.gif',
+                obstaculo: 'paisMaravilhasImg/Cogumelo.png',
+                item: 'paisMaravilhasImg/Cartola.png'
+            },
+
+            {
+                id: 'coelho',
+                nome: 'Coelho Branco',
+                imagem: 'paisMaravilhasImg/CoelhoBranco.gif',
+                obstaculo: 'paisMaravilhasImg/Cogumelo.png',
+                item: 'paisMaravilhasImg/Relogio.png'
+            }
+        ]
+    },
+
+    // TEMA 2: HARRY POTTER
+    harry: {
+        fundo: 'hpImg/hpFundo.jpg',
+
+        personagens: [
+            {
+                id: 'harry',
+                nome: 'Harry Potter',
+                imagem: 'hpImg/HarryPotter.gif',
+                obstaculo: 'hpImg/ChapeuSeletor.png',
+                item: 'hpImg/PedraFilosofal.png'
+            },
+
+            {
+                id: 'voldemort',
+                nome: 'Voldemort',
+                imagem: 'hpImg/Voldemort.gif',
+                obstaculo: 'hpImg/ChapeuSeletor.png',
+                item: 'hpImg/VarinhaDasVarinhas.png'
+            },  
+
+            {
+                id: 'draco',
+                nome: 'Draco Malfoy',
+                imagem: 'hpImg/Draco.gif',
+                obstaculo: 'hpImg/ChapeuSeletor.png',
+                item: 'hpImg/MacaVerde.png'
+            }
+        ]
+    },
+
+    // TEMA 3: BLUEY
+    bluey: {
+        fundo: 'blueyImg/fundoBluey.jpg',
+
+        personagens: [
+            {
+                id: 'bluey',
+                nome: 'Bluey',
+                imagem: 'blueyImg/Bluey.gif',
+                obstaculo: 'blueyImg/Vigneta.png',
+                item: 'blueyImg/coruja.png'
+            },
+
+            {
+                id: 'mackenzie',
+                nome: 'Mackenzie',
+                imagem: 'blueyImg/Mackenzie.gif',
+                obstaculo: 'blueyImg/Vigneta.png',
+                item: 'blueyImg/Pinha.png'
+            },
+
+            {
+                id: 'bingo',
+                nome: 'Bingo',
+                imagem: 'blueyImg/Bingo.gif',
+                obstaculo: 'blueyImg/Vigneta.png',
+                item: 'blueyImg/Balao.png'
+            }
+        ]
+    }
+
+};
+
+    // PERSONAGENS SECRETOS
+    const personagensSecretos = {
+        roberto: {
+            nome: 'Roberto',
+            imagem: 'easterEggsImg/roberto.gif',
+            obstaculo: 'easterEggsImg/Provas.png',
+            item: 'easterEggsImg/yoda.png'
+        },
+
+        daniel: {
+            nome: 'Daniel',
+            imagem: 'easterEggsImg/daniel.gif',
+            obstaculo: 'easterEggsImg/Provas.png',
+            item: 'easterEggsImg/Frango.png'
+        }
+    };
 
     // Recupera último nome utilizado caso exista
     const savedName = localStorage.getItem('mario_jump_player');
@@ -124,7 +244,7 @@ function atualizarDificuldade() {
     // Acelera a moeda sem deixá-la rápida demais
     if (coin) {
         coin.style.animationDuration =
-            `${Math.max(1.2, 3 * novaDuracao / velocidadeInicial)}s`;
+            `${Math.max(0.65, 2 * novaDuracao / velocidadeInicial)}s`;
     }
 }
 
@@ -164,14 +284,14 @@ function atualizarDificuldade() {
         
  // Loop de pontuação progressiva (1 ponto a cada 250ms)
         scoreLoop = setInterval(() => {
-            if (isPlaying) {
-                score += 1;
-                scoreDisplay.textContent = score;
+        if (isPlaying && !isPaused) {
+            score += 1;
+            scoreDisplay.textContent = score;
 
-                atualizarNivelInterface();
-                atualizarDificuldade();
-            }
-        }, 100);
+            atualizarNivelInterface();
+            atualizarDificuldade();
+        }
+    }, 100);
 
 
         // Loop de colisão
@@ -193,6 +313,7 @@ if (clouds) {
 
         // Reseta Mario
         mario.src = personagemAtual;
+        pipe.src = obstaculoAtual;
         mario.style.visibility = 'visible';
         mario.style.animation = ''; 
         mario.style.bottom = '0px';
@@ -220,6 +341,7 @@ function finalizarPulo() {
     jumpTimer = null;
 
     mario.classList.remove('jump');
+    isJumping = false;
 }
 
 // Controla o pulo
@@ -239,6 +361,7 @@ function jump() {
     void mario.offsetWidth;
 
     mario.classList.add('jump');
+    isJumping = true;
 
     if (jumpTip) {
         jumpTip.style.opacity = '0';
@@ -273,9 +396,9 @@ mario.addEventListener('animationend', (event) => {
     const marioLeft = marioRect.left + marioRect.width * 0.35;
     const marioRight = marioRect.right - marioRect.width * 0.35;
 
-    // Hitbox menor do pilar
-    const pipeLeft = pipeRect.left + pipeRect.width * 0.35;
-    const pipeRight = pipeRect.right - pipeRect.width * 0.35;
+    // Hitbox ampliada do obstáculo
+    const pipeLeft = pipeRect.left + pipeRect.width * 0.15;
+    const pipeRight = pipeRect.right - pipeRect.width * 0.15;
 
     // Só existe colisão quando as áreas horizontais se encontram
     const colisaoHorizontal =
@@ -374,9 +497,9 @@ if (
         // Congela o Mario na altura exata e muda para a imagem de Game Over
         mario.style.animation = 'none';
         mario.style.bottom = `${marioPosition}px`;
-        mario.src = 'assets/cavaleiro.gif';
+        mario.src = personagemAtual; 
         mario.style.visibility = 'visible';
-        mario.style.width = '75px';
+        mario.style.width = '70px';
         mario.style.marginLeft = '50px';
 
         // Atualiza modal de Game Over
@@ -499,15 +622,164 @@ if (
             .replace(/'/g, '&#039;');
     }
 
-    // Seleção do personagem
-    if (characterSelect) {
-        personagemAtual = characterSelect.value;
+    // Carrega os personagens de acordo com o tema
+function atualizarSelecaoTema() {
 
-        characterSelect.addEventListener('change', () => {
-            personagemAtual = characterSelect.value;
-            mario.src = personagemAtual;s
-        });
+    const temaEscolhido = themeSelect.value;
+    const tema = configuracaoTemas[temaEscolhido];
+
+    // Limpa as escolhas anteriores
+    characterSelect.innerHTML =
+        '<option value="">Selecione um personagem</option>';
+
+    characterSelect.disabled = true;
+
+    personagemAtual = '';
+    obstaculoAtual = '';
+    itemAtual = '';
+    fundoAtual = '';
+
+    // Se não houver tema escolhido, encerra
+    if (!tema) {
+        gameBoard.style.backgroundImage = '';
+        return;
     }
+
+    temaAtual = temaEscolhido;
+    fundoAtual = tema.fundo;
+
+    // Atualiza o cenário
+    gameBoard.style.backgroundImage =
+        `linear-gradient(rgba(9, 5, 20, 0.10), rgba(9, 5, 20, 0.10)), url("${fundoAtual}")`;
+
+    gameBoard.style.backgroundSize = 'cover';
+    gameBoard.style.backgroundPosition = 'center';
+    gameBoard.style.backgroundRepeat = 'no-repeat';
+
+    // Esconde as nuvens antigas do Cursed Jump
+    if (clouds) {
+        clouds.style.display = 'none';
+    }
+
+    // Adiciona os personagens disponíveis
+    tema.personagens.forEach(personagem => {
+
+        const option = document.createElement('option');
+
+        option.value = personagem.id;
+        option.textContent = personagem.nome;
+
+        characterSelect.appendChild(option);
+    });
+
+    // Libera a seleção
+    characterSelect.disabled = false;
+
+    // Mantém o personagem secreto após trocar o tema
+    const nomeDigitado = playerInput.value.trim().toLowerCase();
+
+    if (Object.prototype.hasOwnProperty.call(personagensSecretos, nomeDigitado)) {
+        aplicarPersonagemSelecionado();
+    }
+}
+
+
+// Aplica o personagem, obstáculo e item selecionados
+function aplicarPersonagemSelecionado() {
+
+    const nomeDigitado = playerInput.value.trim().toLowerCase();
+
+    // Verifica se é um personagem secreto
+    const secreto = personagensSecretos[nomeDigitado];
+
+    if (secreto) {
+    personagemAtual = secreto.imagem;
+    obstaculoAtual = secreto.obstaculo;
+    itemAtual = secreto.item;
+
+    mario.src = personagemAtual;
+    pipe.src = obstaculoAtual;
+
+    if (coin) {
+        const caminhoItem = itemAtual;
+
+        coin.onerror = () => {
+            console.error('Erro ao carregar o item:', caminhoItem);
+        };
+
+        coin.src = caminhoItem;
+    }
+
+    return;
+}
+
+    // Seleção dos personagens normais
+    const tema = configuracaoTemas[themeSelect.value];
+
+    if (!tema) return;
+
+    const personagem = tema.personagens.find(
+        item => item.id === characterSelect.value
+    );
+
+    if (!personagem) return;
+
+    personagemAtual = personagem.imagem;
+    obstaculoAtual = personagem.obstaculo;
+    itemAtual = personagem.item;
+
+    mario.src = personagemAtual;
+    pipe.src = obstaculoAtual;
+
+    if (coin) {
+    const caminhoItem = itemAtual;
+
+    coin.onerror = () => {
+        console.error('Erro ao carregar o item:', caminhoItem);
+    };
+
+    coin.src = caminhoItem;
+}
+} // Fecha aplicarPersonagemSelecionado()
+
+// Detecta personagens secretos ao digitar o nome
+playerInput.addEventListener('input', () => {
+    const nomeDigitado = playerInput.value.trim().toLowerCase();
+
+    const ehSecreto = Object.prototype.hasOwnProperty.call(
+        personagensSecretos,
+        nomeDigitado
+    );
+
+    if (ehSecreto) {
+        aplicarPersonagemSelecionado();
+        return;
+    }
+
+    // Se houver um personagem comum selecionado, aplica ele
+    if (characterSelect.value) {
+        aplicarPersonagemSelecionado();
+        return;
+    }
+
+    // Limpa as imagens secretas anteriores
+    personagemAtual = '';
+    obstaculoAtual = '';
+    itemAtual = '';
+
+    mario.removeAttribute('src');
+    pipe.removeAttribute('src');
+
+    if (coin) {
+        coin.removeAttribute('src');
+    }
+});
+
+
+// Eventos dos seletores
+themeSelect.addEventListener('change', atualizarSelecaoTema);
+
+characterSelect.addEventListener('change', aplicarPersonagemSelecionado);
     // Submit do Formulário de Início (INICIAR JOGO)
     startForm.addEventListener('submit', (e) => {
         e.preventDefault(); // Impede o recarregamento da página
@@ -518,11 +790,29 @@ if (
             return;
         }
 
+        // Verifica se o tema foi escolhido
+        if (!themeSelect.value) {
+            themeSelect.focus();
+            return;
+        }
+
+        // Verifica se é um personagem secreto
+        const nomeEhSecreto = Object.prototype.hasOwnProperty.call(
+            personagensSecretos,
+            nameValue.toLowerCase()
+        );
+
+        // Exige personagem comum somente quando não for secreto
+        if (!characterSelect.value && !nomeEhSecreto) {
+            characterSelect.focus();
+            return;
+        }
+
+        // Confirma as imagens selecionadas
+        aplicarPersonagemSelecionado();
+
         currentPlayer = nameValue;
         localStorage.setItem('mario_jump_player', currentPlayer);
-        personagemAtual = characterSelect
-        ? characterSelect.value
-        : 'assets/cavaleiro.gif';
 
         // Fecha tela de início e começa o jogo
         startModal.classList.remove('active');

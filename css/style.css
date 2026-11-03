@@ -100,19 +100,18 @@ body {
 
 .pipe {
     position: absolute;
-    bottom: -20px;
-    width: 145px;
-    height: 260px;
+    bottom: -10px;
+    width: 130px;
+    height: 145px;
     object-fit: contain;
     object-position: bottom;
     right: -145px;
     z-index: 5;
 }
 
-
 .mario {
     position: absolute;
-    width: 120px;
+    width: 80px;
     bottom: 0;
     left: 20px;
     z-index: 10;
@@ -517,10 +516,11 @@ body {
         height: 380px;
     }
     .mario {
-        width: 100px;
+        width: 70px;
     }
     .pipe {
-        width: 60px;
+        width: 105px;
+        height: 120px;
     }
     .hud-bar {
         padding: 10px 14px;
@@ -544,8 +544,8 @@ body {
 
 .coin {
     position: absolute;
-    width: 32px;
-    height: 32px;
+    width: 65px;
+    height: 65px;
     object-fit: contain;
     right: -40px;
     bottom: 100px;
@@ -553,7 +553,7 @@ body {
 }
 
 .game-board.running .coin {
-    animation: coin-move 3s linear infinite;
+    animation: coin-move 2s linear infinite;
 }
 
 @keyframes coin-move {

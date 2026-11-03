@@ -81,17 +81,24 @@ try {
                         autofocus
                     >
                 </div>
+                <!-- Seleção do tema -->
+                <div class="input-group">
+                    <label for="theme-select">ESCOLHA SEU TEMA:</label>
+
+                    <select id="theme-select" required>
+                        <option value="">Selecione um tema</option>
+                        <option value="alice">Alice no País das Maravilhas</option>
+                        <option value="harry">Harry Potter</option>
+                        <option value="bluey">Bluey</option>
+                    </select>
+                </div>
+
+                <!-- Seleção do personagem -->
                 <div class="input-group">
                     <label for="character-select">ESCOLHA SEU PERSONAGEM:</label>
 
-                    <select id="character-select">
-                        <option value="assets/cavaleiro.gif">
-                            Cavaleiro Amaldiçoado
-                        </option>
-
-                        <option value="assets/cavaleiro2.gif">
-                            Cavaleiro Medieval
-                        </option>
+                    <select id="character-select" disabled>
+                        <option value="">Primeiro escolha um tema</option>
                     </select>
                 </div>
                 <div class="modal-actions">
