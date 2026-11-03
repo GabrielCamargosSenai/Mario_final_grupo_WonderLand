@@ -13,6 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const hudPlayerName = document.getElementById('hud-player-name');
     const scoreDisplay = document.getElementById('score-display');
     const jumpTip = document.getElementById('jump-tip');
+    const difficultyNotice = document.getElementById('difficulty-notice');
+    let difficultyNoticeTimer = null;
 
     // Modais e Telas
     const startModal = document.getElementById('start-modal');
@@ -35,6 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let isPlaying = false;
     let isPaused = false;
     let vidas = 3;
+    let proximaVidaExtra = 500;
     let collisionCooldown = false;
     let isJumping = false;
     let personagemAtual = '';
@@ -44,6 +47,44 @@ document.addEventListener('DOMContentLoaded', () => {
     let temaAtual = '';
 
     const livesDisplay = document.getElementById('lives-display');
+    // ELEMENTOS DE ÁUDIO
+    const somFundo = document.getElementById('som-fundo');
+    const somPulo = document.getElementById('som-pulo');
+    const somColeta = document.getElementById('som-coleta');
+    const somDano = document.getElementById('som-dano');
+    const somGameOver = document.getElementById('som-gameover');
+
+    // FUNÇÃO PARA REPRODUZIR EFEITOS
+    function tocarSom(audio) {
+        if (!audio) return;
+
+        audio.pause();
+        audio.currentTime = 0;
+
+        const reproducao = audio.play();
+
+        if (reproducao) {
+            reproducao.catch(erro => {
+                console.warn('Erro ao reproduzir áudio:', erro);
+            });
+        }
+    }
+
+    // INICIA A MÚSICA DE FUNDO
+    function iniciarSomFundo() {
+        if (!somFundo) return;
+
+        somFundo.volume = 0.25;
+        somFundo.currentTime = 0;
+
+        const reproducao = somFundo.play();
+
+        if (reproducao) {
+            reproducao.catch(erro => {
+                console.warn('Erro ao iniciar música de fundo:', erro);
+            });
+        }
+    }
 
     let gameLoop = null;
     let scoreLoop = null;
@@ -194,6 +235,22 @@ function atualizarNivelInterface() {
     }
 }
 
+
+    // Mostra aviso quando a dificuldade aumenta
+    function mostrarAvisoDificuldade() {
+        if (!difficultyNotice) return;
+
+        difficultyNotice.textContent = '⚠️ A DIFICULDADE AUMENTOU!';
+
+        difficultyNotice.classList.add('show');
+
+        clearTimeout(difficultyNoticeTimer);
+
+        difficultyNoticeTimer = setTimeout(() => {
+            difficultyNotice.classList.remove('show');
+        }, 2000);
+    }   
+
 // Controla a dificuldade do jogo
 function atualizarDificuldade() {
     let novoNivel = 0;
@@ -216,7 +273,7 @@ function atualizarDificuldade() {
     if (novoNivel === nivelAtual) return;
 
     nivelAtual = novoNivel;
-
+    mostrarAvisoDificuldade();
     // Quanto menor a duração, mais rápido o elemento se move
     let novaDuracao =
         velocidadeInicial - nivelAtual * aumentoPorNivel;
@@ -249,10 +306,23 @@ function atualizarDificuldade() {
 }
 
     function atualizarVidas() {
-    if (!livesDisplay) return;
+        if (!livesDisplay) return;
 
-    livesDisplay.textContent = '🤎 '.repeat(vidas).trim();
-}
+        livesDisplay.textContent = '🤎 '.repeat(vidas).trim();
+    }
+
+    // Concede uma vida extra a cada 500 pontos
+    function verificarVidaExtra() {
+        while (score >= proximaVidaExtra) {
+            vidas++;
+
+            proximaVidaExtra += 500;
+
+            atualizarVidas();
+
+            console.log('Vida extra conquistada!');
+        }
+    }
 
     function startGame() {
         // Limpa loops anteriores se existirem
@@ -263,10 +333,14 @@ function atualizarDificuldade() {
         // Reseta posições e visuais
         resetElements();
 
+        // Inicia a música de fundo
+        iniciarSomFundo();
+
         isPlaying = true;
         isPaused = false;
         score = 0;
         vidas = 3;
+        proximaVidaExtra = 500;
         collisionCooldown = false;
 
         scoreDisplay.textContent = '0';
@@ -286,6 +360,9 @@ function atualizarDificuldade() {
         scoreLoop = setInterval(() => {
         if (isPlaying && !isPaused) {
             score += 1;
+
+            verificarVidaExtra();
+
             scoreDisplay.textContent = score;
 
             atualizarNivelInterface();
@@ -362,6 +439,7 @@ function jump() {
 
     mario.classList.add('jump');
     isJumping = true;
+    tocarSom(somPulo);
 
     if (jumpTip) {
         jumpTip.style.opacity = '0';
@@ -423,6 +501,10 @@ if (
     vidas--;
     atualizarVidas();
 
+    if (vidas > 0) {
+        tocarSom(somDano);
+    }
+
     // Pausa o jogo após a colisão
     isPaused = true;
     gameBoard.classList.add('paused');
@@ -459,13 +541,16 @@ if (
             marioRect.bottom > coinRect.top;
 
         if (coletouMoeda) {
-            score += 10;
-            scoreDisplay.textContent = score;
+        tocarSom(somColeta);
 
-            atualizarNivelInterface();
-            atualizarDificuldade();
+        score += 10;
+        verificarVidaExtra();
+        scoreDisplay.textContent = score;
 
-            coin.style.visibility = 'hidden';
+        atualizarNivelInterface();
+        atualizarDificuldade();
+
+        coin.style.visibility = 'hidden';
 
             setTimeout(() => {
                 if (isPlaying && !isPaused) { 
@@ -483,6 +568,12 @@ if (
 
     function triggerGameOver(pipePosition, marioPosition) {
         isPlaying = false;
+        // Para a música de fundo
+        somFundo.pause();
+        somFundo.currentTime = 0;
+
+        // Reproduz o som de Game Over
+        tocarSom(somGameOver);
         gameBoard.classList.remove('paused');   
         clearInterval(gameLoop);
         clearInterval(scoreLoop);

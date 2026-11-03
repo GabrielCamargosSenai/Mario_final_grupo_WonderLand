@@ -52,6 +52,9 @@ try {
 
         
         <main class="game-board" id="game-board">
+            <div class="difficulty-notice" id="difficulty-notice">
+                ⚠️ A DIFICULDADE AUMENTOU!
+            </div>
             <img src="assets/nuvens-dark-fantasy.png" class="clouds" alt="Nuvens sombrias roxas">
             <img src="assets/cavaleiro.gif" class="mario" alt="Cavaleiro">
             <img src="assets/moeda.png" class="coin" id="coin" alt="Moeda">
@@ -165,7 +168,17 @@ try {
         </div>
     </div>
 
-   
+   <!-- Efeitos sonoros do jogo -->
+    <audio id="som-pulo" src="sounds/Pulo.mp3" preload="auto"></audio>
+
+    <audio id="som-coleta" src="sounds/Coleta.mp3" preload="auto"></audio>
+
+    <audio id="som-dano" src="sounds/Dano.mp3" preload="auto"></audio>
+
+    <audio id="som-gameover" src="sounds/GameOver.mp3" preload="auto"></audio>
+
+    <audio id="som-fundo" src="sounds/SomDeFundo.mp3" preload="auto"></audio>
+
     <script src="js/script.js" defer></script>
 </body>
 </html>

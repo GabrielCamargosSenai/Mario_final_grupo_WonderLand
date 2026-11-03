@@ -101,8 +101,8 @@ body {
 .pipe {
     position: absolute;
     bottom: -10px;
-    width: 130px;
-    height: 145px;
+    width: 115px;
+    height: 130px;
     object-fit: contain;
     object-position: bottom;
     right: -145px;
@@ -519,8 +519,8 @@ body {
         width: 70px;
     }
     .pipe {
-        width: 105px;
-        height: 120px;
+        width: 95px;
+        height: 110px;
     }
     .hud-bar {
         padding: 10px 14px;
@@ -580,4 +580,36 @@ body {
 .game-board.paused,
 .game-board.paused * {
     animation-play-state: paused !important;
+}
+
+/* Aviso de aumento de dificuldade */
+.difficulty-notice {
+    position: absolute;
+    top: 25px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px);
+
+    background: rgba(26, 16, 40, 0.95);
+    border: 2px solid #c4a2ff;
+    border-radius: 6px;
+
+    padding: 14px 20px;
+
+    font-family: 'Press Start 2P', cursive;
+    font-size: 11px;
+    color: #ffcc00;
+    text-align: center;
+
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, transform 0.3s;
+
+    z-index: 30;
+    pointer-events: none;
+}
+
+.difficulty-notice.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
 }
