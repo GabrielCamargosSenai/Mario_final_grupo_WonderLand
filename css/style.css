@@ -1,0 +1,583 @@
+/* Reset e Estilos Globais */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #004a9e;
+    font-family: 'Poppins', 'Segoe UI', Tahoma, sans-serif;
+    color: #ffffff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
+    user-select: none;
+}
+
+.game-container {
+    width: 100%;
+    max-width: 900px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Barra Superior (HUD) */
+.hud-bar {
+    width: 100%;
+    background: linear-gradient(180deg, #2b3044 0%, #1a1e2d 100%);
+    border: 3px solid #ffcc00;
+    border-bottom: none;
+    border-radius: 12px 12px 0 0;
+    padding: 12px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.player-info,
+.score-info,
+.level-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.label {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 11px;
+    color: #ffcc00;
+    letter-spacing: 1px;
+}
+
+.value {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 14px;
+    color: #ffffff;
+    text-shadow: 2px 2px #000;
+}
+
+/* Tabuleiro do Jogo */
+
+.game-board {
+    width: 100%;
+    height: 500px;
+    border-bottom: 8px solid #21152e;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+
+    background-image:
+        linear-gradient(
+            rgba(9, 5, 20, 0.15),
+            rgba(9, 5, 20, 0.25)
+        ),
+        url("../assets/nevoa-dark-fantasy.png");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+
+.game-board.running {
+    background-size: cover;
+    background-position: center;
+    animation: none;
+}
+
+
+
+
+
+/* Elementos do Jogo */
+
+.pipe {
+    position: absolute;
+    bottom: -20px;
+    width: 145px;
+    height: 260px;
+    object-fit: contain;
+    object-position: bottom;
+    right: -145px;
+    z-index: 5;
+}
+
+
+.mario {
+    position: absolute;
+    width: 120px;
+    bottom: 0;
+    left: 20px;
+    z-index: 10;
+    object-fit: contain;
+    image-rendering: pixelated;
+}
+
+.clouds {
+    position: absolute;
+    width: 300px;
+    height: auto;
+    top: 60px;
+    right: -300px;
+    z-index: 1;
+    pointer-events: none;
+    image-rendering: pixelated;
+}
+
+/* Dica de pulo na tela */
+.jump-tip {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Press Start 2P', cursive;
+    font-size: 10px;
+    color: rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+
+/* Animações ativas durante o jogo */
+.game-board.running .pipe {
+    animation: pipe-animation 3s infinite linear;
+}
+
+.game-board.running .clouds {
+    animation: clouds-animation 18s infinite linear;
+}
+
+.jump {
+    animation: jump-animation 550ms ease-in-out;
+}
+
+@keyframes pipe-animation {
+    from {
+        right: -80px;
+    }
+    to {
+        right: 100%;
+    }
+}
+
+@keyframes jump-animation {
+    0% {
+        bottom: 0;
+    }
+
+    40% {
+        bottom: 190px;
+    }
+
+    100% {
+        bottom: 0;
+    }
+}
+
+@keyframes clouds-animation {
+    from {
+        right: -550px;
+    }
+    to {
+        right: 100%;
+    }
+}
+
+/* Modais / Telas Sobrepostas */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(10, 12, 22, 0.85);
+    backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 20px;
+    background: linear-gradient(
+        180deg,
+        rgba(7, 5, 13, 0.82),
+        rgba(26, 16, 48, 0.94)
+    );
+    backdrop-filter: blur(5px);
+}
+
+
+.modal-overlay.active {
+    display: flex;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.modal-card {
+    background: linear-gradient(
+        145deg,
+        #1a1028,
+        #0c0913
+    );
+    border: 2px solid #543474;
+    border-radius: 6px;
+    padding: 30px;
+    width: 100%;
+    max-width: 480px;
+    text-align: center;
+
+    box-shadow:
+        0 0 25px rgba(112, 64, 160, 0.2),
+        0 15px 40px rgba(0, 0, 0, 0.7);
+}
+
+.modal-header {
+    margin-bottom: 25px;
+}
+
+.game-title {
+    font-family: 'Press Start 2P', cursive;
+    color: #c4a2ff;
+    font-size: 20px;
+    line-height: 1.5;
+
+    text-shadow:
+        0 0 8px rgba(112, 64, 160, 0.8),
+        3px 3px #090610;
+
+    margin-bottom: 12px;
+}
+
+.game-subtitle {
+    font-size: 13px;
+    color: #a4b1cd;
+}
+
+/* Formulário de Início */
+.start-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.input-group label {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 11px;
+    color: #ffffff;
+}
+
+.input-group input,
+.input-group select {
+    width: 100%;
+    padding: 14px 18px;
+    border-radius: 8px;
+    border: 2px solid #3b4468;
+    background: #121524;
+    color: #ffffff;
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    outline: none;
+    transition: all 0.25s;
+}
+
+.input-group input:focus,
+.input-group select:focus {
+    border-color: #ffcc00;
+    box-shadow: 0 0 10px rgba(255, 204, 0, 0.3);
+}
+
+/* Botões */
+.modal-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.btn {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 12px;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    letter-spacing: 0.5px;
+}
+
+.btn-primary {
+    background: linear-gradient(
+        180deg,
+        #7040a0,
+        #40215f
+    );
+    color: #ffffff;
+    border: 1px solid #9567c5;
+    border-bottom: 4px solid #241333;
+    border-radius: 4px;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(
+        180deg,
+        #8957ba,
+        #543078
+    );
+
+    transform: translateY(-2px);
+    box-shadow: 0 0 16px rgba(112, 64, 160, 0.4);
+}
+
+.btn-primary:active {
+    transform: translateY(2px);
+    border-bottom: 2px solid #7a0b08;
+}
+
+.btn-secondary {
+    background: #2f3752;
+    color: #cbd5e1;
+    border-bottom: 4px solid #1a1e2f;
+}
+
+.btn-secondary:hover {
+    background: #3c4667;
+    color: #ffffff;
+}
+
+/* Status do Laragon */
+.server-status {
+    margin-top: 20px;
+    font-size: 11px;
+    color: #8c97b8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ffcc00;
+    display: inline-block;
+}
+
+.status-dot.online {
+    background: #10b981;
+    box-shadow: 0 0 8px #10b981;
+}
+
+.status-dot.offline {
+    background: #ef4444;
+    box-shadow: 0 0 8px #ef4444;
+}
+
+/* Tela de Game Over & Ranking */
+.gameover-card {
+    max-width: 540px;
+}
+
+.gameover-title {
+    font-family: 'Press Start 2P', cursive;
+    color: #e52521;
+    font-size: 26px;
+    text-shadow: 3px 3px #000;
+    margin-bottom: 10px;
+}
+
+.final-score-box {
+    background: #141726;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 1px solid #333d5d;
+}
+
+.final-score-label {
+    font-size: 12px;
+    color: #94a3b8;
+    margin-bottom: 4px;
+}
+
+.final-score-num {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 24px;
+    color: #ffcc00;
+    text-shadow: 2px 2px #000;
+}
+
+/* Tabela de Ranking */
+.ranking-container {
+    margin-bottom: 20px;
+}
+
+.ranking-title {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 12px;
+    color: #ffcc00;
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+}
+
+.table-wrapper {
+    max-height: 220px;
+    overflow-y: auto;
+    border-radius: 8px;
+    background: #121524;
+    border: 1px solid #2b334d;
+}
+
+.table-wrapper::-webkit-scrollbar {
+    width: 6px;
+}
+.table-wrapper::-webkit-scrollbar-thumb {
+    background: #3b4468;
+    border-radius: 4px;
+}
+
+.ranking-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    text-align: left;
+}
+
+.ranking-table th {
+    background: #242c44;
+    color: #ffcc00;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 9px;
+    padding: 10px 14px;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+.ranking-table td {
+    padding: 8px 14px;
+    border-bottom: 1px solid #1c2236;
+}
+
+.ranking-table tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.ranking-table tr.highlight-current {
+    background: rgba(255, 204, 0, 0.15) !important;
+    font-weight: 700;
+    color: #ffcc00;
+}
+
+.ranking-pos {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 10px;
+    width: 40px;
+}
+
+.loading-cell {
+    text-align: center;
+    padding: 20px !important;
+    color: #8c97b8;
+}
+
+.save-status {
+    margin-top: 8px;
+    font-size: 11px;
+    color: #10b981;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Responsividade */
+@media (max-width: 600px) {
+    .game-board {
+        height: 380px;
+    }
+    .mario {
+        width: 100px;
+    }
+    .pipe {
+        width: 60px;
+    }
+    .hud-bar {
+        padding: 10px 14px;
+        gap: 18px;
+        flex-wrap: wrap;
+    }
+    .label {
+        font-size: 9px;
+    }
+    .value {
+        font-size: 11px;
+    }
+    .game-title {
+        font-size: 16px;
+    }
+    .btn {
+        font-size: 10px;
+        padding: 12px 14px;
+    }
+}
+
+.coin {
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    right: -40px;
+    bottom: 100px;
+    z-index: 5;
+}
+
+.game-board.running .coin {
+    animation: coin-move 3s linear infinite;
+}
+
+@keyframes coin-move {
+    from {
+        right: -40px;
+    }
+
+    to {
+        right: 100%;
+    }
+}
+
+.lives-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#lives-display {
+    font-size: 18px;
+    letter-spacing: 2px;
+}
+
+.game-board.paused,
+.game-board.paused * {
+    animation-play-state: paused !important;
+}
