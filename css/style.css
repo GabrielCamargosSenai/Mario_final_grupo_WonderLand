@@ -144,25 +144,14 @@ body {
 }
 
 /* Animações ativas durante o jogo */
-.game-board.running .pipe {
-    animation: pipe-animation 3s infinite linear;
-}
-
+/* O pilar e a moeda agora são movidos pelo JavaScript (script.js),
+   para a velocidade poder aumentar suavemente sem "saltos". */
 .game-board.running .clouds {
     animation: clouds-animation 18s infinite linear;
 }
 
 .jump {
     animation: jump-animation 550ms ease-in-out;
-}
-
-@keyframes pipe-animation {
-    from {
-        right: -80px;
-    }
-    to {
-        right: 100%;
-    }
 }
 
 @keyframes jump-animation {
@@ -552,19 +541,6 @@ body {
     z-index: 5;
 }
 
-.game-board.running .coin {
-    animation: coin-move 2s linear infinite;
-}
-
-@keyframes coin-move {
-    from {
-        right: -40px;
-    }
-
-    to {
-        right: 100%;
-    }
-}
 
 .lives-info {
     display: flex;

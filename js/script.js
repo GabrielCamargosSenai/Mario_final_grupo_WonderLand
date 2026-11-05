@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let score = 0;
     let isPlaying = false;
     let isPaused = false;
+    const maxVidas = 4; // limite máximo de vidas
     let vidas = 3;
     let proximaVidaExtra = 500;
     let collisionCooldown = false;
@@ -91,11 +92,83 @@ document.addEventListener('DOMContentLoaded', () => {
     let jumpTimer = null;   
 
     // Configurações da dificuldade
-    const velocidadeInicial = 3;
-    const aumentoPorNivel = 0.05;
-    const velocidadeMinima = 1;
+    // Velocidades em pixels por segundo
+    const velocidadeInicial = 330;   // velocidade do obstáculo no início
+    const aumentoPorNivel = 130;     // quanto acelera a cada 150 pontos
+    const velocidadeMaxima = 2800;   // limite máximo de velocidade
+    const pontosPorNivel = 150;
 
-let nivelAtual = 0;
+    let nivelAtual = 0;
+    let velocidadeAtual = velocidadeInicial;
+
+    // Posição horizontal (distância da borda direita) de obstáculo e moeda
+    let pipeX = 0;
+    let coinX = 0;
+    let rafId = null;
+    let ultimoFrame = 0;
+
+    // Posiciona o elemento totalmente fora da tela (à direita),
+    // com uma distância extra aleatória, para nunca "aparecer do nada"
+    function posicaoInicialPipe(extra = 0) {
+        return -(pipe.offsetWidth || 115) - extra;
+    }
+
+    function posicaoInicialMoeda(extra = 0) {
+        return -(coin.offsetWidth || 65) - extra;
+    }
+
+    function aplicarPosicoes() {
+        pipe.style.right = `${pipeX}px`;
+        if (coin) coin.style.right = `${coinX}px`;
+    }
+
+    // Loop de movimento (roda a cada frame da tela)
+    function loopMovimento(agora) {
+        if (!isPlaying) {
+            rafId = null;
+            return;
+        }
+
+        // Tempo desde o último frame (limitado para evitar saltos ao trocar de aba)
+        const dt = Math.min((agora - ultimoFrame) / 1000, 0.05);
+        ultimoFrame = agora;
+
+        if (!isPaused) {
+            const larguraTela = gameBoard.clientWidth;
+
+            // Obstáculo
+            pipeX += velocidadeAtual * dt;
+            if (pipeX > larguraTela) {
+                // Reaparece sempre fora da tela, com distância variável
+                pipeX = posicaoInicialPipe(Math.random() * 250);
+            }
+
+            // Moeda (um pouco mais rápida que o obstáculo)
+            if (coin) {
+                coinX += velocidadeAtual * 1.1 * dt;
+                if (coinX > larguraTela) {
+                    coin.style.visibility = 'visible';
+                    coinX = posicaoInicialMoeda(Math.random() * 400);
+                }
+            }
+
+            aplicarPosicoes();
+            checkCollision();
+        }
+
+        rafId = requestAnimationFrame(loopMovimento);
+    }
+
+    function iniciarMovimento() {
+        cancelAnimationFrame(rafId);
+        ultimoFrame = performance.now();
+        rafId = requestAnimationFrame(loopMovimento);
+    }
+
+    function pararMovimento() {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+    }
    // Configurações dos temas, personagens e obstáculos
 const configuracaoTemas = {
 
@@ -117,7 +190,7 @@ const configuracaoTemas = {
                 nome: 'Chapeleiro Maluco',
                 imagem: 'paisMaravilhasImg/ChapeleiroMaluco.gif',
                 obstaculo: 'paisMaravilhasImg/Cogumelo.png',
-                item: 'paisMaravilhasImg/Cartola.png'
+                item: 'paisMaravilhasImg/Chapeu.png'
             },
 
             {
@@ -156,7 +229,7 @@ const configuracaoTemas = {
                 nome: 'Draco Malfoy',
                 imagem: 'hpImg/Draco.gif',
                 obstaculo: 'hpImg/ChapeuSeletor.png',
-                item: 'hpImg/MacaVerde.png'
+                item: 'hpImg/Maca.png'
             }
         ]
     },
@@ -253,56 +326,21 @@ function atualizarNivelInterface() {
 
 // Controla a dificuldade do jogo
 function atualizarDificuldade() {
-    let novoNivel = 0;
+    // A cada 150 pontos, aumenta um nível
+    const novoNivel = Math.floor(score / pontosPorNivel);
 
-    // Primeiro aumento a partir de 100 pontos
-    if (score >= 100 && score < 5000) {
-        if (score < 1000) {
-            novoNivel = 1;
-        } else {
-            novoNivel = Math.floor(score / 1000) + 1;
-        }
-    }
-
-    // Depois de 5000 pontos, aumenta a cada 2500
-    if (score >= 5000) {
-        novoNivel = 6 + Math.floor((score - 5000) / 2500);
-    }
-
-    // Só recalcula quando a etapa de velocidade muda
+    // Só atualiza quando alcançar um novo nível
     if (novoNivel === nivelAtual) return;
 
     nivelAtual = novoNivel;
+
     mostrarAvisoDificuldade();
-    // Quanto menor a duração, mais rápido o elemento se move
-    let novaDuracao =
-        velocidadeInicial - nivelAtual * aumentoPorNivel;
 
-    // A partir de 50000 pontos, reduz um pouco a velocidade
-    if (score >= 50000) {
-        novaDuracao += 0.2;
-    }
-
-    // Limita a velocidade para manter o jogo funcional
-    novaDuracao = Math.max(
-        velocidadeMinima,
-        Math.min(velocidadeInicial, novaDuracao)
+    // Mais nível = mais pixels por segundo (com limite máximo)
+    velocidadeAtual = Math.min(
+        velocidadeMaxima,
+        velocidadeInicial + nivelAtual * aumentoPorNivel
     );
-
-    // Atualiza o obstáculo
-    pipe.style.animationDuration = `${novaDuracao}s`;
-
-    // Acelera também as nuvens
-    if (clouds) {
-        clouds.style.animationDuration =
-            `${Math.max(7, 18 * novaDuracao / velocidadeInicial)}s`;
-    }
-
-    // Acelera a moeda sem deixá-la rápida demais
-    if (coin) {
-        coin.style.animationDuration =
-            `${Math.max(0.65, 2 * novaDuracao / velocidadeInicial)}s`;
-    }
 }
 
     function atualizarVidas() {
@@ -314,7 +352,8 @@ function atualizarDificuldade() {
     // Concede uma vida extra a cada 500 pontos
     function verificarVidaExtra() {
         while (score >= proximaVidaExtra) {
-            vidas++;
+            // Nunca passa do limite de vidas
+            vidas = Math.min(maxVidas, vidas + 1);
 
             proximaVidaExtra += 500;
 
@@ -326,7 +365,7 @@ function atualizarDificuldade() {
 
     function startGame() {
         // Limpa loops anteriores se existirem
-        clearInterval(gameLoop);
+        pararMovimento();
         clearInterval(scoreLoop);
     
 
@@ -348,7 +387,7 @@ function atualizarDificuldade() {
         atualizarVidas();
         // Reinicia a dificuldade
         nivelAtual = 0;
-        pipe.style.animationDuration = '';
+        velocidadeAtual = velocidadeInicial;
         hudPlayerName.textContent = currentPlayer || 'Jogador';
 
         // Ativa animações CSS do jogo
@@ -371,22 +410,21 @@ function atualizarDificuldade() {
     }, 100);
 
 
-        // Loop de colisão
-        gameLoop = setInterval(checkCollision, 10);
+        // Loop de movimento + colisão (a cada frame)
+        iniciarMovimento();
     }
 
 
     function resetElements() {
         isPaused = false;
         gameBoard.classList.remove('paused');
-        // Reseta o obstáculo e as velocidades
-        pipe.style.animation = '';
+        // Reseta o obstáculo: começa fora da tela, com uma distância extra
+        // para o jogador ter tempo de reagir no início
+        pipe.style.animation = 'none';
         pipe.style.left = '';
-        pipe.style.animationDuration = '';
-
-if (clouds) {
-    clouds.style.animationDuration = '';
-}
+        pipeX = posicaoInicialPipe(250);
+        coinX = posicaoInicialMoeda(500);
+        aplicarPosicoes();
 
         // Reseta Mario
         mario.src = personagemAtual;
@@ -403,9 +441,7 @@ if (clouds) {
 
         if (coin) {
     coin.style.visibility = 'visible';
-    coin.style.animation = '';
-    coin.style.animationDuration = '';
-    coin.style.right = '-40px';
+    coin.style.animation = 'none';
 }
 
         if (jumpTip) {
@@ -471,12 +507,12 @@ mario.addEventListener('animationend', (event) => {
     ) || 0;
 
     // Hitbox menor do cavaleiro
-    const marioLeft = marioRect.left + marioRect.width * 0.35;
-    const marioRight = marioRect.right - marioRect.width * 0.35;
+    const marioLeft = marioRect.left + marioRect.width * 0.25;
+    const marioRight = marioRect.right - marioRect.width * 0.25;
 
     // Hitbox ampliada do obstáculo
-    const pipeLeft = pipeRect.left + pipeRect.width * 0.15;
-    const pipeRight = pipeRect.right - pipeRect.width * 0.15;
+    const pipeLeft = pipeRect.left + pipeRect.width * 0.10;
+    const pipeRight = pipeRect.right - pipeRect.width * 0.10;
 
     // Só existe colisão quando as áreas horizontais se encontram
     const colisaoHorizontal =
@@ -543,25 +579,17 @@ if (
         if (coletouMoeda) {
         tocarSom(somColeta);
 
-        score += 10;
+        score += 5;
         verificarVidaExtra();
         scoreDisplay.textContent = score;
 
         atualizarNivelInterface();
         atualizarDificuldade();
 
+        // Esconde a moeda coletada e a recoloca fora da tela, à direita
         coin.style.visibility = 'hidden';
-
-            setTimeout(() => {
-                if (isPlaying && !isPaused) { 
-                    coin.style.animation = 'none';
-                    coin.style.right = '-40px';
-                    coin.style.visibility = 'visible';
-
-                    void coin.offsetWidth;
-                    coin.style.animation = '';
-                }
-            }, 700);
+        coinX = posicaoInicialMoeda(Math.random() * 400);
+        aplicarPosicoes();
         }
     }
 }
@@ -575,15 +603,11 @@ if (
         // Reproduz o som de Game Over
         tocarSom(somGameOver);
         gameBoard.classList.remove('paused');   
-        clearInterval(gameLoop);
+        pararMovimento();
         clearInterval(scoreLoop);
 
-        
         gameBoard.classList.remove('running');
-
-        
-        pipe.style.animation = 'none';
-        pipe.style.left = `${pipePosition}px`;
+        // O pilar já fica congelado na posição atual (o movimento foi parado)
 
         // Congela o Mario na altura exata e muda para a imagem de Game Over
         mario.style.animation = 'none';
