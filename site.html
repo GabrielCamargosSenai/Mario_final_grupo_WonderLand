@@ -6,7 +6,7 @@
 <title>Fairy Tale – Wonderland</title>
 <style>
   :root{
-    --bg:#08080a; --card:#14101a; --text:#eee8ef; --muted:#b9a9bf;
+    --bg:#08080a; --card:#14101a; --text:#c3bdc4; --muted:#b9a9bf;
     --red:#b3122a; --purple:#6a1fa8; --green:#2f8f5b; --line:#2d1a36;
   }
   *{box-sizing:border-box;margin:0;padding:0}
@@ -164,10 +164,10 @@
     <h1>Nossa Equipe</h1>
     <p>Somos 12 programadores e designers. Conheça alguns dos integrantes.</p>
     <div class="grid">
-      <div class="card"><div class="avatar">C</div><h3>Cecília</h3><div class="role">[Função]</div><p>[Breve biografia e o que fez no projeto.]</p></div>
-      <div class="card"><div class="avatar">AL</div><h3>Ana Lara</h3><div class="role">[Função]</div><p>[Breve biografia e o que fez no projeto.]</p></div>
-      <div class="card"><div class="avatar">GC</div><h3>Gabriel Camargos</h3><div class="role">[Função]</div><p>[Breve biografia e o que fez no projeto.]</p></div>
-      <div class="card"><div class="avatar">PV</div><h3>Pedro Vieira</h3><div class="role">[Função]</div><p>[Breve biografia e o que fez no projeto.]</p></div>
+      <div class="card"><div class="avatar">C</div><h3>Cecília</h3><div class="role">ScrumMaster</div></div>
+      <div class="card"><div class="avatar">AL</div><h3>Ana Lara</h3><div class="role">Organizou a parte visual</div></div>
+      <div class="card"><div class="avatar">GC</div><h3>Gabriel Camargos</h3><div class="role">Organizou o código</div></div>
+      <div class="card"><div class="avatar">PV</div><h3>Pedro Vieira</h3></div>
     </div>
   </section>
 
@@ -179,18 +179,32 @@
 </footer>
 
 <script>
-  // Navegação por hash: #inicio, #jogo, #empresa, #equipe
+  // Navegação entre páginas (funciona em qualquer ambiente, mesmo sem depender da URL)
   const pages = ['inicio','jogo','empresa','equipe'];
-  function route(){
-    const hash = location.hash.replace('#','') || 'inicio';
-    const page = pages.find(p => hash === p || hash.startsWith(p + '-')) || 'inicio';
+
+  function show(id){
+    id = id || 'inicio';
+    const page = pages.find(p => id === p || id.startsWith(p + '-')) || 'inicio';
     document.querySelectorAll('.page').forEach(s => s.classList.toggle('active', s.id === page));
     document.querySelectorAll('nav a[data-p]').forEach(a => a.classList.toggle('active', a.dataset.p === page));
-    const t = document.getElementById(hash);
-    if (t && hash !== page) t.scrollIntoView({behavior:'smooth'}); else window.scrollTo(0,0);
+    const alvo = document.getElementById(id);
+    if (alvo && id !== page) alvo.scrollIntoView({behavior:'smooth'});
+    else window.scrollTo(0,0);
   }
-  window.addEventListener('hashchange', route);
-  route();
+
+  // Todos os links que começam com # passam por aqui
+  document.addEventListener('click', function(e){
+    const link = e.target.closest('a[href^="#"]');
+    if (!link) return;
+    e.preventDefault();
+    const id = link.getAttribute('href').slice(1);
+    show(id);
+    try { history.replaceState(null, '', '#' + id); } catch(err) {}
+  });
+
+  // Ao abrir o site ou usar voltar/avançar do navegador
+  window.addEventListener('hashchange', () => show(location.hash.slice(1)));
+  show(location.hash.slice(1));
 </script>
 </body>
 </html>
