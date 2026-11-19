@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fairy Tale – Wonderland</title>
+<style>
+  :root{
+    --bg:#08080a; --card:#14101a; --text:#eee8ef; --muted:#b9a9bf;
+    --red:#b3122a; --purple:#6a1fa8; --green:#2f8f5b; --line:#2d1a36;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--text);line-height:1.6;
+    background:var(--bg) radial-gradient(circle at 12% 0%,rgba(179,18,42,.2),transparent 45%),radial-gradient(circle at 92% 25%,rgba(106,31,168,.2),transparent 45%) fixed}
+  a{color:inherit;text-decoration:none}
+  h1,h2,h3,.logo{font-family:Georgia,"Times New Roman",serif}
+  header{position:sticky;top:0;z-index:10;background:rgba(8,8,10,.95);backdrop-filter:blur(8px)}
+  header::after{content:"";display:block;height:6px;background:repeating-linear-gradient(90deg,var(--red) 0 20px,#000 20px 40px)}
+  nav{max-width:1000px;margin:auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:14px 20px;gap:10px}
+  .logo{font-weight:700;font-size:1.3rem;color:#e0243d}
+  nav ul{display:flex;gap:6px;list-style:none;flex-wrap:wrap}
+  nav a{padding:8px 14px;border-radius:8px;color:var(--muted);font-weight:500;transition:.2s}
+  nav a:hover,nav a.active{background:var(--purple);color:#fff}
+  nav a.play{background:linear-gradient(135deg,var(--red),var(--purple));color:#fff;font-weight:700}
+  main{max-width:1000px;margin:auto;padding:40px 20px 60px}
+  .page{display:none;animation:fade .4s}
+  .page.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  h1{font-size:2.5rem;margin-bottom:12px;line-height:1.2}
+  h2{font-size:1.6rem;margin:38px 0 12px;color:var(--green);border-left:4px solid var(--red);padding-left:12px}
+  h3{font-size:1.15rem;margin-bottom:4px}
+  p{color:var(--muted);margin-bottom:12px}
+  .hero{text-align:center;padding:50px 10px 36px}
+  .hero .suits{letter-spacing:10px;color:var(--red);font-size:1.4rem;margin-bottom:8px}
+  .hero p{max-width:650px;margin:0 auto 24px;font-size:1.1rem}
+  .btn{display:inline-block;background:linear-gradient(135deg,var(--red),var(--purple));color:#fff;padding:12px 28px;border-radius:10px;font-weight:700}
+  .btn.alt{background:transparent;border:2px solid var(--purple);margin-left:8px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px;margin-top:16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;transition:.2s}
+  .card:hover{transform:translateY(-4px);border-color:var(--green);box-shadow:0 8px 24px rgba(47,143,91,.18)}
+  .avatar{width:76px;height:76px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--purple));display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:800;margin-bottom:12px}
+  .role{color:var(--green);font-size:.9rem;font-weight:600;margin-bottom:8px}
+  .tag{display:inline-block;background:var(--line);color:var(--green);font-size:.8rem;padding:3px 12px;border-radius:20px;margin-bottom:10px}
+  .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0}
+  .tabs a{background:var(--card);padding:8px 16px;border-radius:20px;border:1px solid var(--line);color:var(--muted)}
+  .tabs a:hover{border-color:var(--red);color:#fff}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin:22px 0}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;text-align:center}
+  .stat b{display:block;font-family:Georgia,serif;font-size:2.2rem;color:#e0243d}
+  .stat span{color:var(--muted);font-size:.9rem}
+  .secret{border:2px dashed var(--purple);background:linear-gradient(135deg,rgba(179,18,42,.12),rgba(106,31,168,.12));border-radius:14px;padding:26px;text-align:center}
+  .secret .q{font-size:2.6rem;letter-spacing:8px}
+  footer{text-align:center;padding:26px 20px;color:var(--muted);border-top:1px solid var(--line);font-size:.85rem}
+  @media(max-width:600px){h1{font-size:1.8rem}}
+</style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <a href="#inicio" class="logo">♥ Wonderland</a>
+    <ul>
+      <li><a href="#inicio" data-p="inicio">Início</a></li>
+      <li><a href="#jogo" data-p="jogo">Fairy Tale</a></li>
+      <li><a href="#empresa" data-p="empresa">Empresa</a></li>
+      <li><a href="#equipe" data-p="equipe">Equipe</a></li>
+      <li><a href="index.php" class="play">▶ Jogar</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+
+  <!-- ============ INÍCIO ============ -->
+  <section id="inicio" class="page">
+    <div class="hero">
+      <div class="suits">♥ ♠ ♦ ♣</div>
+      <span class="tag">Um jogo da Wonderland</span>
+      <h1>Fairy Tale</h1>
+      <p>Entre num mundo onde as histórias se encontram. Bruxos, personagens do País das Maravilhas e a turma mais querida da TV dividem o mesmo jogo, e ainda existem personagens secretos esperando para serem descobertos.</p>
+      <a class="btn" href="index.php">▶ Jogar agora</a>
+      <a class="btn alt" href="#jogo">Conheça o jogo</a>
+    </div>
+    <div class="grid">
+      <div class="card"><h3>⚡ Harry Potter</h3><p>Harry, Draco e Voldemort.</p></div>
+      <div class="card"><h3>🎩 País das Maravilhas</h3><p>Rainha de Copas, Chapeleiro Maluco e Coelho Branco.</p></div>
+      <div class="card"><h3>🐶 Bluey</h3><p>Bluey, Bingo e Mackenzie.</p></div>
+    </div>
+  </section>
+
+  <!-- ============ O JOGO ============ -->
+  <section id="jogo" class="page">
+    <h1>Sobre o Fairy Tale</h1>
+    <a class="btn" href="index.php">▶ Jogar agora</a>
+    <div class="tabs">
+      <a href="#jogo-intuito">Intuito</a>
+      <a href="#jogo-temas">Temas e personagens</a>
+      <a href="#jogo-surpresa">Personagens surpresa</a>
+    </div>
+
+    <h2 id="jogo-intuito">🎯 Intuito do jogo</h2>
+    <p>O Fairy Tale nasceu da vontade de reunir, num só lugar, mundos que muita gente ama. Aqui você escolhe um tema, conhece seus personagens e vive uma aventura própria em cada universo.</p>
+    <p><em>[Complete aqui: qual é o objetivo do jogador, o gênero do jogo e a experiência que vocês querem proporcionar.]</em></p>
+
+    <h2 id="jogo-temas">🌍 Os 3 temas</h2>
+
+    <h3 style="margin-top:18px">⚡ Tema Harry Potter</h3>
+    <div class="grid">
+      <div class="card"><div class="avatar">⚡</div><h3>Harry Potter</h3><div class="role">Protagonista</div><p>O jovem bruxo que sobreviveu e enfrenta o mal que ameaça o mundo mágico.</p></div>
+      <div class="card"><div class="avatar">🐍</div><h3>Draco Malfoy</h3><div class="role">Rival</div><p>Orgulhoso e ambicioso, o grande rival de Harry em Hogwarts.</p></div>
+      <div class="card"><div class="avatar">💀</div><h3>Voldemort</h3><div class="role">Vilão</div><p>O bruxo das trevas, o inimigo mais temido de todos.</p></div>
+    </div>
+
+    <h3 style="margin-top:30px">🎩 Tema País das Maravilhas</h3>
+    <div class="grid">
+      <div class="card"><div class="avatar">♥</div><h3>Rainha de Copas</h3><div class="role">Vilã</div><p>Governa com mão de ferro e adora mandar cortar cabeças.</p></div>
+      <div class="card"><div class="avatar">🎩</div><h3>Chapeleiro Maluco</h3><div class="role">Aliado excêntrico</div><p>Dono das festas do chá mais malucas e imprevisíveis do reino.</p></div>
+      <div class="card"><div class="avatar">🐇</div><h3>Coelho Branco</h3><div class="role">Guia</div><p>Sempre atrasado, é ele quem leva todo mundo para dentro da toca.</p></div>
+    </div>
+
+    <h3 style="margin-top:30px">🐶 Tema Bluey</h3>
+    <div class="grid">
+      <div class="card"><div class="avatar">🐶</div><h3>Bluey</h3><div class="role">Protagonista</div><p>A cachorrinha cheia de imaginação que transforma tudo em brincadeira.</p></div>
+      <div class="card"><div class="avatar">🐕</div><h3>Bingo</h3><div class="role">Aliada</div><p>A irmã caçula, parceira de todas as aventuras de Bluey.</p></div>
+      <div class="card"><div class="avatar">🦴</div><h3>Mackenzie</h3><div class="role">Amigo</div><p>O border collie da turma, divertido e cheio de energia.</p></div>
+    </div>
+
+    <h2 id="jogo-surpresa">❓ Personagens surpresa</h2>
+    <div class="secret">
+      <div class="q">? ? ?</div>
+      <h3>Alguns personagens só aparecem para quem jogar</h3>
+      <p>Existem personagens escondidos no Fairy Tale e não vamos contar quem são.<br>
+      <strong style="color:var(--green)">Dica:</strong> pense nas pessoas que mais nos ensinaram. Digite o nome dos nossos queridos professores e descubra. 🍎</p>
+    </div>
+  </section>
+
+  <!-- ============ EMPRESA ============ -->
+  <section id="empresa" class="page">
+    <h1>Wonderland</h1>
+    <p>A Wonderland é uma desenvolvedora de jogos movida por imaginação. Fundada há 7 anos e ativa há 4, já lançou mais de 15 jogos. Alguns nasceram de parcerias, e outros têm direitos autorais inteiramente nossos.</p>
+
+    <div class="stats">
+      <div class="stat"><b>15+</b><span>jogos lançados</span></div>
+      <div class="stat"><b>12</b><span>programadores e designers</span></div>
+      <div class="stat"><b>7</b><span>anos desde a fundação</span></div>
+      <div class="stat"><b>4</b><span>anos de atividade</span></div>
+    </div>
+
+    <h2>Nossos jogos</h2>
+    <div class="grid">
+      <div class="card"><h3>🤝 Parcerias</h3><p>Parte do nosso catálogo foi feita em colaboração com outras equipes e marcas.</p></div>
+      <div class="card"><h3>✨ Criações autorais</h3><p>Outros jogos são 100% nossos, com direitos autorais inteiramente da Wonderland.</p></div>
+    </div>
+
+    <h2>Missão, visão e valores</h2>
+    <p><em>[Complete aqui com a missão, a visão e os valores da Wonderland.]</em></p>
+
+    <h2>Contato</h2>
+    <p>📧 contato@wonderland.com · 📍 Cidade, Estado · 📸 @wonderland</p>
+  </section>
+
+  <!-- ============ EQUIPE ============ -->
+  <section id="equipe" class="page">
+    <h1>Nossa Equipe</h1>
+    <p>Somos 12 programadores e designers. Conheça alguns dos integrantes.</p>
+    <div class="grid">
+      <div class="card"><div class="avatar">C</div><h3>Cecília</h3><div class="role">[Função]</div><p>[Breve biografia e o que fez no projeto.]</p></div>
+      <div class="card"><div class="avatar">AL</div><h3>Ana Lara</h3><div class="role">[Função]</div><p>[Breve biografia e o que fez no projeto.]</p></div>
+      <div class="card"><div class="avatar">GC</div><h3>Gabriel Camargos</h3><div class="role">[Função]</div><p>[Breve biografia e o que fez no projeto.]</p></div>
+      <div class="card"><div class="avatar">PV</div><h3>Pedro Vieira</h3><div class="role">[Função]</div><p>[Breve biografia e o que fez no projeto.]</p></div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  © 2026 Wonderland · Todos os direitos reservados<br>
+  Harry Potter, Bluey, Alice no País das Maravilhas e seus personagens pertencem aos respectivos detentores de direitos.
+</footer>
+
+<script>
+  // Navegação por hash: #inicio, #jogo, #empresa, #equipe
+  const pages = ['inicio','jogo','empresa','equipe'];
+  function route(){
+    const hash = location.hash.replace('#','') || 'inicio';
+    const page = pages.find(p => hash === p || hash.startsWith(p + '-')) || 'inicio';
+    document.querySelectorAll('.page').forEach(s => s.classList.toggle('active', s.id === page));
+    document.querySelectorAll('nav a[data-p]').forEach(a => a.classList.toggle('active', a.dataset.p === page));
+    const t = document.getElementById(hash);
+    if (t && hash !== page) t.scrollIntoView({behavior:'smooth'}); else window.scrollTo(0,0);
+  }
+  window.addEventListener('hashchange', route);
+  route();
+</script>
+</body>
+</html>

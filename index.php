@@ -107,6 +107,20 @@ try {
                 <div class="modal-actions">
                     <button type="submit" class="btn btn-primary" id="btn-start">INICIAR JOGO</button>
                     <button type="button" class="btn btn-secondary" id="btn-view-ranking">VER RANKING</button>
+
+                    <!--
+                        BOTÃO DO SITE EXTERNO
+                        Quando a página estiver pronta, troque o href="#" abaixo pela URL final
+                        (ex: https://seusite.com.br) e remova o atributo "aria-disabled" e a classe "is-disabled".
+                    -->
+                    <a href="site.html"
+                       class="btn btn-external"
+                       id="btn-external-site"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       tabindex="-1">
+                        ✦ VISITAR O SITE ✦
+                    </a>
                 </div>
             </form>
 

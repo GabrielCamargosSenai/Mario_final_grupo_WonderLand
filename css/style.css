@@ -345,6 +345,45 @@ body {
     color: #ffffff;
 }
 
+/* Botão de link externo (mesmo conceito dark fantasy do jogo) */
+.btn-external {
+    display: block;
+    text-align: center;
+    background: linear-gradient(
+        180deg,
+        #1a1028,
+        #0c0913
+    );
+    color: #ffcc00;
+    border: 1px solid #ffcc00;
+    border-bottom: 4px solid #8a6d00;
+    border-radius: 4px;
+    text-shadow: 0 0 8px rgba(255, 204, 0, 0.5);
+}
+
+.btn-external:hover {
+    background: linear-gradient(
+        180deg,
+        #2b1a42,
+        #150d22
+    );
+    color: #ffe066;
+    transform: translateY(-2px);
+    box-shadow: 0 0 16px rgba(255, 204, 0, 0.3);
+}
+
+.btn-external:active {
+    transform: translateY(2px);
+    border-bottom: 2px solid #8a6d00;
+}
+
+/* Enquanto o link ainda não existir (href="#") */
+.btn-external.is-disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
 /* Status do Laragon */
 .server-status {
     margin-top: 20px;
